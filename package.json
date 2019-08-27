@@ -1,0 +1,16 @@
+{
+    "name": "@daalgi/snm.js",
+    "version": "0.0.1",
+    "description": "A simple collection of numerical methods for javascript.",
+    "main": "",
+    "scripts": {
+        "test": "node ./node_modules/mocha/bin/mocha"
+    },
+    "author": "daalgi",
+    "license": "MIT",
+    "dependencies": {},
+    "devDependencies": {
+        "chai": "^4.2.0",
+        "mocha": "^6.2.0"
+    }
+}
