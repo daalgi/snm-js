@@ -2,15 +2,21 @@
     "name": "@daalgi/snm.js",
     "version": "0.0.1",
     "description": "A simple collection of numerical methods for javascript.",
-    "main": "",
+    "main": "dist/index.js",
+    "module": "dist/index.es.js",
     "scripts": {
-        "test": "node ./node_modules/mocha/bin/mocha"
+        "test": "node ./node_modules/mocha/bin/mocha",
+        "build": "webpack --config webpack.config.js"
     },
     "author": "daalgi",
     "license": "MIT",
     "dependencies": {},
     "devDependencies": {
         "chai": "^4.2.0",
-        "mocha": "^6.2.0"
+        "mocha": "^6.2.2",
+        "uglify-js": "^3.6.0",
+        "uglifyjs-webpack-plugin": "^2.2.0",
+        "webpack": "^4.39.3",
+        "webpack-cli": "^3.3.7"
     }
 }

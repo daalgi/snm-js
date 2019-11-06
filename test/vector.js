@@ -1,4 +1,4 @@
-const { Vector } = require("../src/vector");
+const { Vector } = require("../src/linear-algebra");
 const assert = require("chai").assert;
 
 describe("vector.Vector class defines a vector", () =>{

@@ -1,5 +1,3 @@
-const { Vector } = require("../src/vector");
-const { Matrix } = require("../src/matrix");
 const { polynomial, logarithmic, exponential, power } = require("../src/regression");
 const assert = require("chai").assert;
 
