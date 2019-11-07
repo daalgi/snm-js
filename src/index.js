@@ -21,9 +21,17 @@ import {
     rnd} from "./utils";
 
 export { 
-    trapezoidalForceIntegration, trapezoidalMomentIntegration, montecarlo,
+    trapezoidalForceIntegration, 
+    trapezoidalMomentIntegration, 
+    montecarlo as montecarloIntegration,
+    
     Matrix, Vector,
-    polynomial, logarithmic, exponential, power,
+
+    polynomial as polynomialRegression, 
+    logarithmic as logarithmicRegression, 
+    exponential as exponentialRegression, 
+    power as powerRegression,
+
     areEqual, toDegrees, toRadians, sum, rnd,
 }
 // TUTORIAL TO BUILD A PACKAGE
