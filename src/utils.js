@@ -31,24 +31,11 @@ const rnd = (min = 0, max = 1) => {
   return Math.random() * (max - min) + min;
 }
 
-/**
- * Given a line defined by two points (x1, y1) and (x2, y2), compute the its intersection with the x-axis
- * @param {number} x1 x-coordinate of the point 1
- * @param {number} y1 y-coordinate of the point 1
- * @param {number} x2 x-coordinate of the point 2
- * @param {number} y2 y-coordinate of the point 2  
- * @returns {number} x-coordinate of the intersection of the line with the x-axis
- */
-const findLineXaxisIntersection = ({ x1, y1, x2, y2 }) => {
-  if(y1 - y2 === 0) throw new Error("The line is parallel to the X-axis")
-  return x1 - (x2 - x1) / (y2 - y1) * y1
-}
 
 module.exports = {
     areEqual,
     toDegrees,
     toRadians,
     sum,
-    rnd,
-    findLineXaxisIntersection
+    rnd
   }
