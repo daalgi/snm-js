@@ -1,7 +1,8 @@
 const { 
     randomPointInBox,
-    boundingBoxAddition, boundingBoxArea } = require('./geometry')
-const { findLineXaxisIntersection } = require('./utils')
+    boundingBoxAddition, boundingBoxArea,
+    findLineXaxisIntersection
+} = require('./geometry')
 
 /**
  * Trapezoidal rule to integrate (f(x) dx)
@@ -46,7 +47,7 @@ function trapezoidalMomentIntegration({x, f, xref = 0}) {
  * @param {Array} p is the path along which the function is integrated
  * @param {Array} r is the function (result) to be integrated
  * @returns {Array} array of objects, each one containing the resultant, the initial and final points of the stretch and the centroid
- * @todo last stretch incorrect if the length is 1 (1 path point)
+ * @todo make the algorithm more elegant?
  */
 function resultantStretches({ p, r }) {
     let n = p.length
@@ -58,12 +59,13 @@ function resultantStretches({ p, r }) {
     let i = 1  
     let path_i = p[0]
     let path_last_i = 0
-    let path_f, resultant, centroid
+    let path_f, last_r, resultant, centroid
     let subPath, subRes
     while(!end) {
       
       if(r[i] === 0) {
         
+        // If the function is exactly equal to 0, add the stretch object
         path_f = p[i]
         //console.log(path_i, path_f)
         subPath = p.slice(path_last_i, i + 1)
@@ -77,10 +79,11 @@ function resultantStretches({ p, r }) {
         path_i = path_f
         path_last_i = i
         
-      } else if(r[i] * r[i-1] < 0) {
-        
+      } else if(i < n-1 && r[i] * r[i-1] < 0) {
+        //console.log('inside sign change')
         // If there is a change in the sign of the result
-        // add a stretch object
+        // add a stretch object from the final previous one 
+        // to the x-coordinate where the function is equal to zero
         path_f = findLineXaxisIntersection({ x1: p[i-1], y1: r[i-1], x2: p[i], y2: r[i] })
         subPath = p.slice(path_last_i, i + 1).concat(path_f)
         subRes = r.slice(path_last_i, i + 1).concat(0)
@@ -95,20 +98,61 @@ function resultantStretches({ p, r }) {
         
       }
       
+      // If it is the last index
       if(i === n-1) {
-        // If it is the last index, fill the last stretch
-        path_f = p[n-1]
-        subPath = p.slice(path_last_i, n)
-        subRes = r.slice(path_last_i, n)
-        resultant = trapezoidalForceIntegration({ x: subPath, f: subRes })
-        centroid = resultant === 0 ? 0 : trapezoidalMomentIntegration({ x: subPath, f: subRes }) / resultant
-        // Add the object to the array of stretches
-        stretches.push({ path_i, path_f, resultant, centroid })      
-    
-      } 
-      // Finish the loop
-      if(i === n-1) end = true
-      else          i++
+        //console.log('inside last index')
+        // If there is a change of sign in the last two points of the path,
+        // close the penultimate stretch
+        if(r[i] * r[i-1] < 0) {          
+          //console.log('inside last index with sign change')
+          path_f = findLineXaxisIntersection({ x1: p[i-1], y1: r[i-1], x2: p[i], y2: r[i] })
+          subPath = p.slice(path_last_i, i + 1).concat(path_f)
+          subRes = r.slice(path_last_i, i + 1).concat(0)
+          //console.log(subPath, subRes)
+          resultant = trapezoidalForceIntegration({ x: subPath, f: subRes })
+          centroid = resultant === 0 ? 0 : trapezoidalMomentIntegration({ x: subPath, f: subRes }) / resultant
+          // Add the object to the array of stretches
+          stretches.push({ path_i, path_f, resultant, centroid })      
+
+          // Update for next stretch
+          path_i = path_f
+          path_last_i = i
+          last_r = 0
+          
+          // Close the last stretch
+          //console.log('close last stretch')
+          path_f = p[i]
+          subPath = [path_i].concat(p.slice(path_last_i, n))
+          subRes = [0].concat(r.slice(path_last_i, n))
+          //console.log(subPath, subRes)
+          resultant = trapezoidalForceIntegration({ x: subPath, f: subRes })
+          centroid = resultant === 0 ? 0 : trapezoidalMomentIntegration({ x: subPath, f: subRes }) / resultant
+          // Add the object to the array of stretches
+          stretches.push({ path_i, path_f, resultant, centroid })      
+          
+        } else {
+        
+          // Close the last stretch (without sign change in the last two path points)
+          //console.log('close last stretch normally')
+          path_f = p[i]
+          subPath = p.slice(path_last_i, n)
+          subRes = r.slice(path_last_i, n)
+          //console.log(subPath, subRes)
+          resultant = trapezoidalForceIntegration({ x: subPath, f: subRes })
+          centroid = resultant === 0 ? 0 : trapezoidalMomentIntegration({ x: subPath, f: subRes }) / resultant
+          // Add the object to the array of stretches
+          stretches.push({ path_i, path_f, resultant, centroid })     
+        
+        }
+        
+        
+      }  // if(i === n-1)
+      
+      // Finish the loop or prepare nex iter
+      if(i === n-1) 
+        end = true
+      else
+        i++
     }
     return stretches
   }
