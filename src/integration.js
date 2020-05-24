@@ -264,10 +264,6 @@ function montecarlo({ shapes, numPoints = 1000, iterations = 50 }) {
     return area.reduce((acc, v) => acc + v, 0) / iterations
 }
 
-
-
-
-//export {
 module.exports = {
     trapezoidalForceIntegration, 
     trapezoidalMomentIntegration,
