@@ -1,11 +1,12 @@
 const { Vector, Matrix } = require("./src/linear-algebra")
-const { polynomial } = require("./src/regression")
+const { polynomial, leastSquaresRegression } = require("./src/regression")
 const { sum } = require("./src/utils")
 const { randomPointInBox,
     boundingBoxAddition,
     Rectangle, Circle,
     RectangularPrism, Sphere } = require('./src/geometry')
-const { montecarlo, resultantStretches } = require('./src/integration')
+const { montecarlo, resultantStretches, gaussLegendre } = require('./src/integration')
+const { brent } = require('./src/rootFinding')
 const { linearInterpolation } = require('./src/utils')
 /*
 let I = Matrix.eye(2);
@@ -47,4 +48,40 @@ console.log(res)*/
 let arrX = [0, 1, 2, 3]
 let arrY = [0, 1, 2, 3]
 let x = 4
-console.log(linearInterpolation(arrX, arrY, x))
+//console.log(linearInterpolation(arrX, arrY, x))
+let f = x => (2 * x - x * x)
+//console.log(gaussLegendre(f, -1, 10, 50))
+
+/*x = [0, 1, 2, 3]
+y = [0, 1, -4, 9]
+let data = [{ x: 1, y: 3 }, { x: 2, y: 6 }, { x: 3, y: 11 }]
+//console.log(polynomial({ x, y, order: 2 }))
+let model = leastSquaresRegression({ type: "quadratic", data })
+console.log(model)*/
+
+/*f = x => x + 12
+console.log(brent(f, -10, 10, 1e-7))*/
+
+/*f = x => Math.sin(Math.sqrt(x)) * Math.exp(Math.sqrt(x)) / Math.sqrt(x)
+let sqrt = Math.sqrt(Math.PI)
+let exp = Math.exp(sqrt)
+let result = exp * Math.sin(sqrt) - exp * Math.cos(sqrt) + 1*/
+f = x => Math.exp(Math.sqrt(x)) * Math.sqrt(x)
+let result = (8 - Math.pow(2, 5/2)) * Math.exp(Math.sqrt(2)) - 2 * Math.exp(1)
+console.log(result)
+console.log(gaussLegendre(f, 1, 2, 2)-result)
+console.log(gaussLegendre(f, 1, 2, 3)-result)
+console.log(gaussLegendre(f, 1, 2, 4)-result)
+console.log(gaussLegendre(f, 1, 2, 5)-result)
+console.log(gaussLegendre(f, 1, 2, 10)-result)
+console.log(gaussLegendre(f, 1, 2, 20)-result)
+console.log(gaussLegendre(f, 1, 2, 30)-result)
+
+//f = x => Math.exp(-x) * Math.pow(Math.sin(4 * x), 2)
+/*f = x => Math.exp(-x) * Math.pow(Math.sin(4 * x), 2)
+console.log(gaussLegendre(f, -1, 1, 4))
+console.log(gaussLegendre(f, -1, 1, 10))
+console.log(gaussLegendre(f, -1, 1, 15))
+console.log(gaussLegendre(f, -1, 1, 20))
+console.log(gaussLegendre(f, -1, 1, 25))
+console.log(gaussLegendre(f, -1, 1, 30))*/

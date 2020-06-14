@@ -1,6 +1,8 @@
 import {
     trapezoidalForceIntegration,
     trapezoidalMomentIntegration,
+    gaussLegendre,
+    gaussLegendreByIntervals,
     montecarlo
 } from "./integration"
 import {
@@ -11,7 +13,8 @@ import {
     polynomial,
     logarithmic,
     exponential,
-    power
+    power,
+    leastSquaresRegression
 } from "./regression";
 import { 
     areEqual,
@@ -23,6 +26,8 @@ import {
 export { 
     trapezoidalForceIntegration, 
     trapezoidalMomentIntegration, 
+    gaussLegendre,
+    gaussLegendreByIntervals,
     montecarlo as montecarloIntegration,
     
     Matrix, Vector,
@@ -31,6 +36,7 @@ export {
     logarithmic as logarithmicRegression, 
     exponential as exponentialRegression, 
     power as powerRegression,
+    leastSquaresRegression,
 
     areEqual, toDegrees, toRadians, sum, rnd,
 }

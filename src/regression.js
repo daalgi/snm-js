@@ -239,14 +239,14 @@ const leastSquaresRegression = ({ type, data, ...props }) => {
         type = "linear"
 
     // Convert the array of objects into two arrays of numbers
-    let x = [], y= []
-    for(let i = 0; i < data.length; i++) {
-        if(!isNaN(data[i].x) && !isNaN(data[i].y) && ![null, undefined].includes(data[i].x, data[i].y)) {
+    let x = [], y = []
+    for (let i = 0; i < data.length; i++) {
+        if (!isNaN(data[i].x) && !isNaN(data[i].y) && ![null, undefined].includes(data[i].x, data[i].y)) {
             x.push(parseFloat(data[i].x))
             y.push(parseFloat(data[i].y))
         }
     }
-    
+
     // Check the length of the arrays
     if (x.length < 2 || x.length !== y.length)
         return null
