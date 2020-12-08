@@ -122,8 +122,85 @@ class Cone {
     }
 }
 
+class Point2d {
+    constructor({ x, y }) {
+        this.x = x
+        this.y = y
+    }
+
+    distanceToPoint(other) {
+        return Math.hypot(this.x-other.x, this.y-other.y)
+    }
+
+    vectorTo(point) {
+        return [point.x-this.x, point.y-this.y]
+    }
+
+    unitVectorTo(point) {
+        const v = this.vectorTo(point)
+        const mod = Math.hypot(...v)
+        return v.map(i => i/mod)
+    }
+}
+
+class Line2d {
+    constructor({ p0=null, p1=null, slope=null, intercept=null }) {
+        if (p0 !== null && p1 != null) {
+            const incX = p1.x - p0.x
+            if (incX === 0) {
+                this.slope = Infinity
+                this.intercept = undefined
+                this.x0 = p0.x
+                this.direction = [0, p1.y - p0.y]
+            } else {
+                this.slope = (p1.y - p0.y) / incX
+                this.intercept = p0.y - this.slope * p0.x
+                this.direction = p0.unitVectorTo(p1)
+            }
+            
+        } else if (slope !== null && intercept !== null) {
+            this.slope = slope
+            this.intercept = intercept
+            const p0 = new Point2d({ x: 0, y: intercept })
+            const p1 = new Point2d({ x: 1, y: this.y(1) })
+            this.direction = p0.unitVectorTo(p1)
+        } else {
+            throw new Error("Incorrect Line2d initialization arguments")
+        }
+    }
+
+    y(x) {
+        if (this.slope === Infinity) {
+            if (this.x0 === x) {
+                throw new Error(`Vertical line having infinite y values for x=${x}`)
+            }
+            throw new Error(`Vertical line not passing through x=${x}`)
+        }
+        return this.slope * x + this.intercept
+    }
+
+    parallelLinePassingThrough(point) {
+        const intercept = point.y - this.slope * point.x
+        return new Line2d({ slope: this.slope, intercept })
+    }
+
+    intersection(line) {
+        if (line.slope === this.slope) {
+            if (line.intercept === this.intercept) {
+                return new Line2d({ slope: this.slope, intercept: this.intercept })
+            }
+            return null
+        }
+        const x = (line.intercept - this.intercept) / (this.slope - line.slope)
+        const y = this.slope * x + this.intercept
+        return new Point2d({ x, y })        
+    }
+}
+
 module.exports = { 
     randomPointInBox, 
     boundingBoxAddition, boundingBoxArea, boundingBoxVolume,
     findLineXaxisIntersection,
-    Rectangle, Circle, RectangularPrism, Sphere, Cone }
+    Rectangle, Circle, RectangularPrism, Sphere, Cone,
+    Point2d, Line2d
+ }
