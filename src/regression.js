@@ -10,17 +10,17 @@ const { sum } = require("./utils")
  * @param {Array} x
  * @param {Array} y
  * @param {Array} func
- * @param {Array} coefs
+ * @param {Array} coeffs
  * @returns {Object} - { meanAbsoluteError, meanSquaredError, rootMeanSquaredError, meanAbsolutePercentageError, r2score, r2scoreAdjusted }
  */
-const computeMetrics = ({ x, y, func, coefs }) => {
+const computeMetrics = ({ x, y, func, coeffs }) => {
     return {
         meanAbsoluteError: meanAbsoluteError({ x, y, func }),
         meanSquaredError: meanSquaredError({ x, y, func }),
         rootMeanSquaredError: rootMeanSquaredError({ x, y, func }),
         meanAbsolutePercentageError: meanAbsolutePercentageError({ x, y, func }),
         r2score: r2score({ x, y, func }),
-        r2scoreAdjusted: r2scoreAdjusted({ x, y, func, coefs }),
+        r2scoreAdjusted: r2scoreAdjusted({ x, y, func, coeffs }),
     }
 }
 const meanAbsoluteError = ({ x, y, func }) => {
@@ -45,11 +45,11 @@ const residualSumSquares = ({ x, y, func }) => {
 const r2score = ({ x, y, func }) => {
     return 1 - residualSumSquares({ x, y, func }) / totalSumSquares({ x, y, func })
 }
-const r2scoreAdjusted = ({ x, y, func, coefs }) => {
+const r2scoreAdjusted = ({ x, y, func, coeffs }) => {
     let r2 = r2score({ x, y, func })
     let n = x.length
-    let num_coefs = coefs.length
-    return 1 - (1 - r2) * ((n - 1) / (n - (num_coefs + 1)))
+    let num_coeffs = coeffs.length
+    return 1 - (1 - r2) * ((n - 1) / (n - (num_coeffs + 1)))
 }
 
 /**
@@ -57,7 +57,7 @@ const r2scoreAdjusted = ({ x, y, func, coefs }) => {
  * @param {Array} x
  * @param {Array} y
  * @param {Integer} order
- * @returns {Object} - { coefs, predict, metrics, equation }
+ * @returns {Object} - { coeffs, predict, metrics, equation }
  */
 const polynomial = ({ x, y, order = 2 }) => {
     if (!Array.isArray(x) || !Array.isArray(y))
@@ -74,35 +74,34 @@ const polynomial = ({ x, y, order = 2 }) => {
     const mat_AtA_inv = matA.transpose().multiply(matA).inverse()
     let yVector = new Vector(...y)
     const vec_Aty = yVector.transform(matA.transpose())
-    const coefs = vec_Aty.transform(mat_AtA_inv).toArray()
+    const coeffs = vec_Aty.transform(mat_AtA_inv).toArray()
 
     // Predict function
     const predict = (x) => {
-        return sum(coefs.map((coef, i) => coef * Math.pow(x, coefs.length - i - 1)))
+        return sum(coeffs.map((coeff, i) => coeff * Math.pow(x, coeffs.length - i - 1)))
     }
 
-    let metrics = computeMetrics({ x, y, func: predict, coefs })
+    let metrics = computeMetrics({ x, y, func: predict, coeffs })
 
     // Equation (string)
     let equation = { withParameters: 'y = ', withCoefficients: 'y = ' }
     for (let i = 0; i < order + 1; i++) {
         if (i === 0) {
             equation.withParameters += 'a0'
-            equation.withCoefficients += `${coefs[order - i]}`
+            equation.withCoefficients += `${coeffs[order - i]}`
         } else {
             equation.withParameters += [
                 ` + a${i} * `,
                 (i < 2) ? 'x' : `x^${i}`
             ].join('')
             equation.withCoefficients += [
-                (coefs[order - i] < 0 ? ' -' : ' +') + ` ${Math.abs(coefs[order - i])} * `,
+                (coeffs[order - i] < 0 ? ' -' : ' +') + ` ${Math.abs(coeffs[order - i])} * `,
                 (i < 2) ? 'x' : `x^${i}`
             ].join('')
         }
     }
 
-    //return {coefs, predict, r2}
-    return { coefs, predict, metrics, equation }
+    return { coeffs, predict, metrics, equation }
 }
 
 /**
@@ -111,7 +110,7 @@ const polynomial = ({ x, y, order = 2 }) => {
  * source: http://mathworld.wolfram.com/LeastSquaresFittingLogarithmic.html
  * @param {Array} x
  * @param {Array} y
- * @returns {Object} - { coefs, predict, metrics, equation }
+ * @returns {Object} - { coeffs, predict, metrics, equation }
  */
 const logarithmic = ({ x, y }) => {
     let sum_logxi = sum(x.map(x => Math.log(x)))
@@ -123,22 +122,22 @@ const logarithmic = ({ x, y }) => {
     let b = (n * sum_yilogxi - sum_yi * sum_logxi) / denom
     let a = (sum_yi - b * sum_logxi) / n
 
-    let coefs = [a, b]
+    let coeffs = [a, b]
 
     // Predict function
     const predict = (x) => {
-        return coefs[0] + coefs[1] * Math.log(x)
+        return coeffs[0] + coeffs[1] * Math.log(x)
     }
 
-    let metrics = computeMetrics({ x, y, func: predict, coefs })
+    let metrics = computeMetrics({ x, y, func: predict, coeffs })
 
     // Equation (string)
     let equation = {
         withParameters: 'y = a0 + a1 * log(x)',
-        withCoefficients: `y = ${coefs[0]} ${coefs[1] < 0 ? '-' : '+'} ${Math.abs(coefs[1])} * log(x)`
+        withCoefficients: `y = ${coeffs[0]} ${coeffs[1] < 0 ? '-' : '+'} ${Math.abs(coeffs[1])} * log(x)`
     }
 
-    return { coefs, predict, metrics, equation }
+    return { coeffs, predict, metrics, equation }
 }
 
 /**
@@ -146,7 +145,7 @@ const logarithmic = ({ x, y }) => {
  * source: http://mathworld.wolfram.com/LeastSquaresFittingExponential.html
  * @param {Array} x
  * @param {Array} y
- * @returns {Object} - { coefs, predict, metrics, equation }
+ * @returns {Object} - { coeffs, predict, metrics, equation }
  */
 const exponential = ({ x, y }) => {
     let sum_xi = sum(x)
@@ -157,22 +156,22 @@ const exponential = ({ x, y }) => {
     let a = (sum_logyi * sum_xi2 - sum_xi * sum_xilogyi) / denom
     let b = (x.length * sum_xilogyi - sum_xi * sum_logyi) / denom
 
-    let coefs = [Math.exp(a), b]
+    let coeffs = [Math.exp(a), b]
 
     // Predict function
     const predict = (x) => {
-        return coefs[0] * Math.exp(coefs[1] * x)
+        return coeffs[0] * Math.exp(coeffs[1] * x)
     }
 
-    let metrics = computeMetrics({ x, y, func: predict, coefs })
+    let metrics = computeMetrics({ x, y, func: predict, coeffs })
 
     // Equation (string)
     let equation = {
         withParameters: 'y = a0 * exp(a1 * x)',
-        withCoefficients: `y = ${coefs[0]} * exp(${coefs[1]} * x)`
+        withCoefficients: `y = ${coeffs[0]} * exp(${coeffs[1]} * x)`
     }
 
-    return { coefs, predict, metrics, equation }
+    return { coeffs, predict, metrics, equation }
 }
 
 /**
@@ -181,7 +180,7 @@ const exponential = ({ x, y }) => {
  * TODO: check log(0) values
  * @param {Array} x
  * @param {Array} y
- * @returns {Object} - { coefs, predict, metrics, equation }
+ * @returns {Object} - { coeffs, predict, metrics, equation }
  */
 const power = ({ x, y }) => {
     let sum_logxi = sum(x.map(v => Math.log(v)))
@@ -193,22 +192,22 @@ const power = ({ x, y }) => {
     let b = (n * sum_logxilogyi - sum_logxi * sum_logyi) / denom
     let a = (sum_logyi - b * sum_logxi) / n
 
-    let coefs = [Math.exp(a), b]
+    let coeffs = [Math.exp(a), b]
 
     // Predict function
     const predict = (x) => {
-        return coefs[0] * Math.pow(x, coefs[1])
+        return coeffs[0] * Math.pow(x, coeffs[1])
     }
 
-    let metrics = computeMetrics({ x, y, func: predict, coefs })
+    let metrics = computeMetrics({ x, y, func: predict, coeffs })
 
     // Equation (string)
     let equation = {
         withParameters: 'y = a * x^(b)',
-        withCoefficients: `y = ${coefs[0]} * x^(${coefs[1]})`
+        withCoefficients: `y = ${coeffs[0]} * x^(${coeffs[1]})`
     }
 
-    return { coefs, predict, metrics, equation }
+    return { coeffs, predict, metrics, equation }
 }
 
 
@@ -231,7 +230,7 @@ const REGRESSION_TYPES = Object.keys(LeastSquaresRegressionFactory)
  * instead of two arrays of numbers x, y.
  * @param {String} type - regression type: linear, quadratic, cubic, quartic, polynomial, logarithmic, exponential, power
  * @param {Object} data - { x, y }
- * @returns {Object} - { coefs, predict, metrics, equation }
+ * @returns {Object} - { coeffs, predict, metrics, equation }
  */
 const leastSquaresRegression = ({ type, data, ...props }) => {
 
