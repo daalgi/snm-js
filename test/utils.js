@@ -1,5 +1,7 @@
 const {
-    areEqual, toDegrees, toRadians, sum, rnd, linearInterpolation
+    areEqual, round, 
+    toDegrees, toRadians, 
+    sum, rnd, linearInterpolation
 } = require("../src/utils")
 const assert = require("chai").assert
 
@@ -15,6 +17,29 @@ describe("utils module", () => {
         describe("1 and 1.000000001", () => {
             it("returns true", () => {
                 assert.equal(areEqual(1, 1.000000001), true)
+            })
+        })
+    })
+
+    describe("round(): rounds a number (by default 2 decimals)", () => {
+        describe("round(8.13, 1)", () => {
+            it("returns 8.1", () => {
+                assert.equal(round(8.13, 1), 8.1)
+            })
+        })
+        describe("round(8.13, 0)", () => {
+            it("returns 8", () => {
+                assert.equal(round(8.13, 0), 8)
+            })
+        })
+        describe("round(8.1393)", () => {
+            it("returns 8.14", () => {
+                assert.equal(round(8.1393), 8.14)
+            })
+        })
+        describe("round(8.1393, 6)", () => {
+            it("returns 8.1393", () => {
+                assert.equal(round(8.1393, 6), 8.1393)
             })
         })
     })
@@ -73,7 +98,7 @@ describe("utils module", () => {
     describe("linearInterpolation(): given two arrays of X and Y", () => {
         let arrX = [0, 1, 2, 4, 5]
         let arrY = [0, 1, 2, 4, 6]
-        
+
         it("returns y=1.5 for an intermediate value (x=1.5) ", () => {
             let x = 1.5
             let y = linearInterpolation(arrX, arrY, x)
