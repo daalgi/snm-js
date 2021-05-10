@@ -10,12 +10,9 @@
     },
     "author": "daalgi",
     "license": "MIT",
-    "dependencies": {},
     "devDependencies": {
         "chai": "^4.2.0",
         "mocha": "^8.2.1",
-        "uglify-js": "^3.12.1",
-        "uglifyjs-webpack-plugin": "^2.2.0",
         "webpack": "^5.10.0",
         "webpack-cli": "^4.2.0"
     }
