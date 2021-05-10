@@ -1,4 +1,4 @@
-const { Matrix, Vector } = require("./linear-algebra")
+const { Matrix, Vector } = require("./linearAlgebra")
 const { sum } = require("./utils")
 
 /**

@@ -4,6 +4,7 @@ const {
 
 /**
  * Montecarlo numerical integration for an array of shapes planar
+ * TODO test
  * @param {array} shapes 
  * @param {number} numPoints
  * @param {array} iterations

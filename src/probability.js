@@ -1,10 +1,10 @@
 /**
- * Random number within an interval
+ * Random number within a range (interval)
  * @param {number} min 
  * @param {number} max 
- * @returns {number} random number within the interval [min, max]
+ * @returns {number} random number within the range [min, max]
  */
-const randomInterval = (min = 0, max = 1) => {
+const randomInRange = (min = 0, max = 1) => {
     return Math.random() * (max - min) + min;
 }
 
@@ -28,7 +28,16 @@ const randomFromNormalDistribution = (mean, stdDev) => {
 }
 
 /**
- * Given a population with a normal distribution compute the mean and standard deviation
+ * Standard deviation
+ * @param {Array} arr
+ * @returns {Number} 
+ */
+const standardDeviation = arr =>
+    Math.sqrt(arr.map(x => Math.pow(x - m, 2)).reduce((acc, v) => acc + v) / n)
+
+/**
+ * Given a population with a normal distribution 
+ * compute the mean and standard deviation
  * @param {Array} arr - Array filled of numbers representing the population to be studied
  * @returns {Object} - { mean, standardDeviation }
  */
@@ -38,7 +47,9 @@ const normalDistribution = arr => {
         const m = arr.reduce((acc, v) => acc + v) / n
         return {
             mean: m,
-            standardDeviation: Math.sqrt(arr.map(x => Math.pow(x - m, 2)).reduce((acc, v) => acc + v) / n)
+            standardDeviation: Math.sqrt(arr.map(x =>
+                Math.pow(x - m, 2)).reduce((acc, v) =>
+                    acc + v) / n)
         }
     }
     return {}
@@ -46,7 +57,7 @@ const normalDistribution = arr => {
 
 module.exports = {
     standardDeviation,
-    randomInterval,
+    randomInRange,
     randomFromNormalDistribution,
     normalDistribution
 }

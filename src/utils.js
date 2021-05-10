@@ -48,32 +48,15 @@ const sum = arr => {
 }
 
 /**
- * Random number within an interval
- * @param {number} min 
- * @param {number} max 
- * @returns {number} random number within the interval [min, max]
- */
-const rnd = (min = 0, max = 1) => {
-    return Math.random() * (max - min) + min;
-}
-
-/**
- * Standard deviation
- * @param {Array} arr
- * @returns {Number} 
- */
-const standardDeviation = arr =>
-    Math.sqrt(arr.map(x => Math.pow(x - m, 2)).reduce((acc, v) => acc + v) / n)
-
-/**
- * Linear interpolation
- * TO BE REMOVED!!
+ * Piecewise linear interpolation.
+ * If the given `x` is not within the defined interval in `arrX`,
+ * it performs extrapolation.
  * @param {Array} arrX ascending sorted array of numbers
  * @param {Array} arrY array of numbers (function values)
  * @param {number} x
  * @returns {Object}
  */
-const linearInterpolation = (arrX = [], arrY = [], x) => {
+const piecewiseLinearInterpolation = (arrX = [], arrY = [], x) => {
     if (!Array.isArray(arrX) || !Array.isArray(arrY))
         throw Error("arrX and arrY must be arrays of numbers.")
     if (arrX.length !== arrY.length && arrX.length > 1)
@@ -114,7 +97,6 @@ module.exports = {
     toDegrees,
     toRadians,
     sum,
-    rnd,
-    linearInterpolation,
+    piecewiseLinearInterpolation,
     factorial
 }

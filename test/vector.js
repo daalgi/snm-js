@@ -1,4 +1,4 @@
-const { Vector } = require("../src/linear-algebra");
+const { Vector } = require("../src/linearAlgebra");
 const assert = require("chai").assert;
 
 describe("linear-algebra module - Matrix object", () => {
