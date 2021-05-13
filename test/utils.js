@@ -43,6 +43,11 @@ describe("utils module", () => {
                 assert.equal(round(8.1393, 6), 8.1393)
             })
         })
+        describe("round(0, 6)", () => {
+            it("returns 0", () => {
+                assert.equal(round(0, 6), 0)
+            })
+        })
     })
 
     describe("toDegrees(): converts radians to degrees", () => {

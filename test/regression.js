@@ -1,6 +1,8 @@
 const {
+    polynomialEquationToString,
     polynomial, logarithmic, exponential, power, leastSquaresRegression
 } = require("../src/regression")
+const { round } = require("../src/utils")
 const assert = require("chai").assert
 
 const checkCoeffs = ({ calcCoeffs, realCoeffs, tolerance = 1e-15 }) => {
@@ -16,8 +18,64 @@ const checkPredictions = ({ x, y, predict, tolerance = 1e-15 }) => {
     }
 }
 
+const DECIMALS = 4
+
 describe("regression module", () => {
-    
+
+    describe("polynomialEquationToString()", () => {
+        describe("for a constant equation", () => {
+            let coeffs = [8]
+            it("returns the string representation of the equation with 3 decimals", () => {
+                let eqp = "y = a_0"
+                let eqc = "y = 8.0000"
+                let eq = polynomialEquationToString({ coeffs })
+                assert.equal(eq.withParameters, eqp)
+                assert.equal(eq.withCoefficients, eqc)
+            })
+        })
+        describe("for a linear equation", () => {
+            let coeffs = [1, 1]
+            it("returns the string representation of the equation with 3 decimals", () => {
+                let eqp = "y = a_0 + a_1 * x"
+                let eqc = "y = 1.000 + 1.000 x"
+                let eq = polynomialEquationToString({ coeffs, coeffDecimals: 3 })
+                assert.equal(eq.withParameters, eqp)
+                assert.equal(eq.withCoefficients, eqc)
+            })
+            it("returns the string representation of the equation with 4 decimals", () => {
+                let eqp = "y = a_0 + a_1 * x"
+                let eqc = "y = 1.0000 + 1.0000 x"
+                let eq = polynomialEquationToString({ coeffs, coeffDecimals: 4 })
+                assert.equal(eq.withParameters, eqp)
+                assert.equal(eq.withCoefficients, eqc)
+
+                eq = polynomialEquationToString({ coeffs })
+                assert.equal(eq.withParameters, eqp)
+                assert.equal(eq.withCoefficients, eqc)
+            })
+        })
+        describe("for a quadratic equation", () => {
+            let coeffs = [8, 0, 3]
+            it("returns the string representation of the equation with 3 decimals", () => {
+                let eqp = "y = a_0 + a_1 * x + a_2 * x^2"
+                let eqc = "y = 3.0000 + 0.0000 x + 8.0000 x^2"
+                let eq = polynomialEquationToString({ coeffs })
+                assert.equal(eq.withParameters, eqp)
+                assert.equal(eq.withCoefficients, eqc)
+            })
+        })
+        describe("for a cubic equation", () => {
+            let coeffs = [8, -1, -3.0, -13.13136]
+            it("returns the string representation of the equation with 3 decimals", () => {
+                let eqp = "y = a_0 + a_1 * x + a_2 * x^2 + a_3 * x^3"
+                let eqc = "y = -13.1314 - 3.0000 x - 1.0000 x^2 + 8.0000 x^3"
+                let eq = polynomialEquationToString({ coeffs })
+                assert.equal(eq.withParameters, eqp)
+                assert.equal(eq.withCoefficients, eqc)
+            })
+        })
+    })
+
     describe("polynomial()", () => {
         describe("for a perfect dataset fitting into a straight line", () => {
             let x = [0, 1, 3, 4]
@@ -31,10 +89,11 @@ describe("regression module", () => {
                 checkPredictions({ x, y, predict: model.predict, tolerance: 1e-15 })
             })
             it("returns the equation as a string", () => {
-                let eqp = "y = a0 + a1 * x"
-                let eqc = `y = ${model.coeffs[1]} + ${model.coeffs[0]} * x`
-                assert.equal(eqp, model.equation.withParameters)
-                assert.equal(eqc, model.equation.withCoefficients)
+                let eqp = "y = a_0 + a_1 * x"
+                let eqc = `y = ${round(model.coeffs[1], 4).toFixed(4)}`
+                eqc += ` + ${round(model.coeffs[0], 4).toFixed(4)} x`
+                assert.equal(model.equation.withParameters, eqp)
+                assert.equal(model.equation.withCoefficients, eqc)
             })
         })
         describe("for a perfect dataset fitting into a parabola", () => {
@@ -49,10 +108,12 @@ describe("regression module", () => {
                 checkPredictions({ x, y, predict: model.predict, tolerance: 1e-12 })
             })
             it("returns the equation as a string", () => {
-                let eqp = "y = a0 + a1 * x + a2 * x^2"
-                let eqc = `y = ${model.coeffs[2]} - ${Math.abs(model.coeffs[1])} * x + ${model.coeffs[0]} * x^2`
-                assert.equal(eqp, model.equation.withParameters)
-                assert.equal(eqc, model.equation.withCoefficients)
+                let eqp = "y = a_0 + a_1 * x + a_2 * x^2"
+                let eqc = `y = ${round(model.coeffs[2], 4).toFixed(4)}`
+                eqc += ` + ${round(model.coeffs[1], 4).toFixed(4)} x`
+                eqc += ` + ${round(model.coeffs[0], 4).toFixed(4)} x^2`
+                assert.equal(model.equation.withParameters, eqp)
+                assert.equal(model.equation.withCoefficients, eqc)
             })
         })
         describe("for a perfect dataset fitting into a parabola with 100 points", () => {
@@ -67,10 +128,12 @@ describe("regression module", () => {
                 checkPredictions({ x, y, predict: model.predict, tolerance: 1e-9 })
             })
             it("returns the equation as a string", () => {
-                let eqp = "y = a0 + a1 * x + a2 * x^2"
-                let eqc = `y = ${model.coeffs[2]} - ${Math.abs(model.coeffs[1])} * x + ${model.coeffs[0]} * x^2`
-                assert.equal(eqp, model.equation.withParameters)
-                assert.equal(eqc, model.equation.withCoefficients)
+                let eqp = "y = a_0 + a_1 * x + a_2 * x^2"
+                let eqc = `y = ${round(model.coeffs[2], 4).toFixed(4)}`
+                eqc += ` - ${round(Math.abs(model.coeffs[1]), 4).toFixed(4)} x`
+                eqc += ` + ${round(model.coeffs[0], 4).toFixed(4)} x^2`
+                assert.equal(model.equation.withParameters, eqp)
+                assert.equal(model.equation.withCoefficients, eqc)
             })
         })
         describe("for a perfect dataset fitting into a parabola with 1000 points", () => {
@@ -85,8 +148,10 @@ describe("regression module", () => {
                 checkPredictions({ x, y, predict: model.predict, tolerance: 1e-7 })
             })
             it("returns the equation as a string", () => {
-                let eqp = "y = a0 + a1 * x + a2 * x^2"
-                let eqc = `y = ${model.coeffs[2]} - ${Math.abs(model.coeffs[1])} * x + ${model.coeffs[0]} * x^2`
+                let eqp = "y = a_0 + a_1 * x + a_2 * x^2"
+                let eqc = `y = ${round(model.coeffs[2], 4).toFixed(4)}`
+                eqc += ` - ${round(Math.abs(model.coeffs[1]), 4).toFixed(4)} x`
+                eqc += ` + ${round(model.coeffs[0], 4).toFixed(4)} x^2`
                 assert.equal(eqp, model.equation.withParameters)
                 assert.equal(eqc, model.equation.withCoefficients)
             })
@@ -103,8 +168,11 @@ describe("regression module", () => {
                 checkPredictions({ x, y, predict: model.predict, tolerance: 1e-9 })
             })
             it("returns the equation as a string", () => {
-                let eqp = "y = a0 + a1 * x + a2 * x^2 + a3 * x^3"
-                let eqc = `y = ${model.coeffs[3]} + ${model.coeffs[2]} * x - ${Math.abs(model.coeffs[1])} * x^2 + ${model.coeffs[0]} * x^3`
+                let eqp = "y = a_0 + a_1 * x + a_2 * x^2 + a_3 * x^3"
+                let eqc = `y = ${round(model.coeffs[3], 4).toFixed(4)}`
+                eqc += ` + ${round(model.coeffs[2], 4).toFixed(4)} x`
+                eqc += ` - ${round(Math.abs(model.coeffs[1]), 4).toFixed(4)} x^2`
+                eqc += ` + ${round(model.coeffs[0], 4).toFixed(4)} x^3`
                 assert.equal(eqp, model.equation.withParameters)
                 assert.equal(eqc, model.equation.withCoefficients)
             })
@@ -121,8 +189,12 @@ describe("regression module", () => {
                 checkPredictions({ x, y, predict: model.predict, tolerance: 1e-7 })
             })
             it("returns the equation as a string", () => {
-                let eqp = "y = a0 + a1 * x + a2 * x^2 + a3 * x^3 + a4 * x^4"
-                let eqc = `y = ${model.coeffs[4]} + ${model.coeffs[3]} * x - ${Math.abs(model.coeffs[2])} * x^2 + ${model.coeffs[1]} * x^3 - ${Math.abs(model.coeffs[0])} * x^4`
+                let eqp = "y = a_0 + a_1 * x + a_2 * x^2 + a_3 * x^3 + a_4 * x^4"
+                let eqc = `y = ${round(model.coeffs[4], 4).toFixed(4)}`
+                eqc += ` + ${round(model.coeffs[3], 4).toFixed(4)} x`
+                eqc += ` - ${round(Math.abs(model.coeffs[2]), 4).toFixed(4)} x^2`
+                eqc += ` + ${round(model.coeffs[1], 4).toFixed(4)} x^3`
+                eqc += ` - ${round(Math.abs(model.coeffs[0]), 4).toFixed(4)} x^4`
                 assert.equal(eqp, model.equation.withParameters)
                 assert.equal(eqc, model.equation.withCoefficients)
             })
@@ -165,7 +237,7 @@ describe("regression module", () => {
                 checkPredictions({ x, y, predict: model.predict, tolerance: 1e-14 })
             })
             it("returns the equation as a string", () => {
-                let eqp = "y = a0 + a1 * log(x)"
+                let eqp = "y = a_0 + a_1 * log(x)"
                 let eqc = `y = ${model.coeffs[0]} + ${model.coeffs[1]} * log(x)`
                 assert.equal(eqp, model.equation.withParameters)
                 assert.equal(eqc, model.equation.withCoefficients)
@@ -187,7 +259,7 @@ describe("regression module", () => {
                 checkPredictions({ x, y, predict: model.predict, tolerance: 1e-10 })
             })
             it("returns the equation as a string", () => {
-                let eqp = "y = a0 * exp(a1 * x)"
+                let eqp = "y = a_0 * exp(a_1 * x)"
                 let eqc = `y = ${model.coeffs[0]} * exp(${model.coeffs[1]} * x)`
                 assert.equal(eqp, model.equation.withParameters)
                 assert.equal(eqc, model.equation.withCoefficients)
@@ -205,7 +277,7 @@ describe("regression module", () => {
                 checkPredictions({ x, y, predict: model.predict, tolerance: 1e-15 })
             })
             it("returns the equation as a string", () => {
-                let eqp = "y = a0 * exp(a1 * x)"
+                let eqp = "y = a_0 * exp(a_1 * x)"
                 let eqc = `y = ${model.coeffs[0]} * exp(${model.coeffs[1]} * x)`
                 assert.equal(eqp, model.equation.withParameters)
                 assert.equal(eqc, model.equation.withCoefficients)
@@ -247,8 +319,10 @@ describe("regression module", () => {
                 checkPredictions({ x, y: data.map(d => d.y), predict: model.predict, tolerance: 1e-12 })
             })
             it("returns the equation as a string", () => {
-                let eqp = "y = a0 + a1 * x + a2 * x^2"
-                let eqc = `y = ${model.coeffs[2]} + ${Math.abs(model.coeffs[1])} * x + ${model.coeffs[0]} * x^2`
+                let eqp = "y = a_0 + a_1 * x + a_2 * x^2"
+                let eqc = `y = ${round(model.coeffs[2], 4).toFixed(4)}`
+                eqc += ` + ${round(Math.abs(model.coeffs[1]), 4).toFixed(4)} x`
+                eqc += ` + ${round(model.coeffs[0], 4).toFixed(4)} x^2`
                 assert.equal(eqp, model.equation.withParameters)
                 assert.equal(eqc, model.equation.withCoefficients)
             })

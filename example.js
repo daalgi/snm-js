@@ -1,5 +1,7 @@
-const { Vector, Matrix } = require("./src/linear-algebra")
-const { polynomial, leastSquaresRegression } = require("./src/regression")
+const { Vector, Matrix } = require("./src/linearAlgebra")
+const { 
+   polynomialEquationToString, polynomial, leastSquaresRegression 
+} = require("./src/regression")
 const { sum } = require("./src/utils")
 const { randomPointInBox,
     boundingBoxAddition,
@@ -66,16 +68,16 @@ console.log(brent(f, -10, 10, 1e-7))*/
 let sqrt = Math.sqrt(Math.PI)
 let exp = Math.exp(sqrt)
 let result = exp * Math.sin(sqrt) - exp * Math.cos(sqrt) + 1*/
-f = x => Math.exp(Math.sqrt(x)) * Math.sqrt(x)
-let result = (8 - Math.pow(2, 5/2)) * Math.exp(Math.sqrt(2)) - 2 * Math.exp(1)
-console.log(result)
-console.log(gaussLegendre(f, 1, 2, 2)-result)
-console.log(gaussLegendre(f, 1, 2, 3)-result)
-console.log(gaussLegendre(f, 1, 2, 4)-result)
-console.log(gaussLegendre(f, 1, 2, 5)-result)
-console.log(gaussLegendre(f, 1, 2, 10)-result)
-console.log(gaussLegendre(f, 1, 2, 20)-result)
-console.log(gaussLegendre(f, 1, 2, 30)-result)
+// f = x => Math.exp(Math.sqrt(x)) * Math.sqrt(x)
+// let result = (8 - Math.pow(2, 5/2)) * Math.exp(Math.sqrt(2)) - 2 * Math.exp(1)
+// console.log(result)
+// console.log(gaussLegendre(f, 1, 2, 2)-result)
+// console.log(gaussLegendre(f, 1, 2, 3)-result)
+// console.log(gaussLegendre(f, 1, 2, 4)-result)
+// console.log(gaussLegendre(f, 1, 2, 5)-result)
+// console.log(gaussLegendre(f, 1, 2, 10)-result)
+// console.log(gaussLegendre(f, 1, 2, 20)-result)
+// console.log(gaussLegendre(f, 1, 2, 30)-result)
 
 //f = x => Math.exp(-x) * Math.pow(Math.sin(4 * x), 2)
 /*f = x => Math.exp(-x) * Math.pow(Math.sin(4 * x), 2)
@@ -85,3 +87,5 @@ console.log(gaussLegendre(f, -1, 1, 15))
 console.log(gaussLegendre(f, -1, 1, 20))
 console.log(gaussLegendre(f, -1, 1, 25))
 console.log(gaussLegendre(f, -1, 1, 30))*/
+
+console.log(polynomialEquationToString({ coeffs: [-1, 0, 3], coeffDecimals: 2 }))

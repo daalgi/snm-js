@@ -1,5 +1,5 @@
 const { Matrix, Vector } = require("./linearAlgebra")
-const { sum } = require("./utils")
+const { sum, round } = require("./utils")
 
 /**
  * ORDINARY LEAST SQUARES LINEAR REGRESSION MODULE
@@ -11,7 +11,10 @@ const { sum } = require("./utils")
  * @param {Array} y
  * @param {Array} func
  * @param {Array} coeffs
- * @returns {Object} - { meanAbsoluteError, meanSquaredError, rootMeanSquaredError, meanAbsolutePercentageError, r2score, r2scoreAdjusted }
+ * @returns {Object} - 
+ * { meanAbsoluteError, meanSquaredError, 
+ *   rootMeanSquaredError, meanAbsolutePercentageError, 
+ *   r2score, r2scoreAdjusted }
  */
 const computeMetrics = ({ x, y, func, coeffs }) => {
     return {
@@ -53,13 +56,53 @@ const r2scoreAdjusted = ({ x, y, func, coeffs }) => {
 }
 
 /**
+ * Returns an object of strings containing the polynomial equation, i.e.
+ * { withParameters: "y = a_0 + a_1 * x", withCoefficients: "y = -3.14 + 8 x" }
+ * The equation is formatted according to katex standard.
+ * @param {array} coeffs - polynomial equation coefficients a0, a1, ..., an
+ * @param {integer} coeffDecimals - to be shown in the strings
+ * @returns object { withParameters, withCoefficients }
+ */
+ const polynomialEquationToString = ({ coeffs, coeffDecimals = 4 }) => {
+    // Equation (string)
+    let order = coeffs.length - 1
+    let equation = { withParameters: 'y = ', withCoefficients: 'y = ' }
+    for (let i = 0; i < order + 1; i++) {
+        if (i === 0) {
+            equation.withParameters += 'a_0'
+            equation.withCoefficients += `${round(
+                coeffs[order - i], coeffDecimals).toFixed(coeffDecimals)}`
+        } else {
+            equation.withParameters += [
+                ` + a_${i} * `,
+                i === 1
+                    ? 'x'
+                    : `x^${i}`
+            ].join('')
+            equation.withCoefficients += [
+                coeffs[order - i] < -1e-13 // sufficiently small negative number close to zero
+                    ? ` - ${round(
+                        -coeffs[order - i], coeffDecimals).toFixed(coeffDecimals)}`
+                    : ` + ${round(
+                        coeffs[order - i], coeffDecimals).toFixed(coeffDecimals)}`,
+                (i === 1) ? ' x' : ` x^${i}`
+            ].join('')
+        }
+    }
+    // Remove last space
+    // equation.withParameters = equation.withParameters.slice(0, -1)
+    return equation
+}
+
+/**
  * Polynomial regression: y = a0 + a1 * x + a2 * x^2 + ... + an * x^n
  * @param {Array} x
  * @param {Array} y
- * @param {Integer} order
+ * @param {Integer} order - order or grade of the polynomial equation
+ * @param {Integer} coeffDecimals - number of the decimals in the coefficients of the string representation of the equation
  * @returns {Object} - { coeffs, predict, metrics, equation }
  */
-const polynomial = ({ x, y, order = 2 }) => {
+const polynomial = ({ x, y, order = 2, coeffDecimals = 4 }) => {
     if (!Array.isArray(x) || !Array.isArray(y))
         throw new Error("x and y should be arrays")
     if (x.length !== y.length)
@@ -84,22 +127,7 @@ const polynomial = ({ x, y, order = 2 }) => {
     let metrics = computeMetrics({ x, y, func: predict, coeffs })
 
     // Equation (string)
-    let equation = { withParameters: 'y = ', withCoefficients: 'y = ' }
-    for (let i = 0; i < order + 1; i++) {
-        if (i === 0) {
-            equation.withParameters += 'a0'
-            equation.withCoefficients += `${coeffs[order - i]}`
-        } else {
-            equation.withParameters += [
-                ` + a${i} * `,
-                (i < 2) ? 'x' : `x^${i}`
-            ].join('')
-            equation.withCoefficients += [
-                (coeffs[order - i] < 0 ? ' -' : ' +') + ` ${Math.abs(coeffs[order - i])} * `,
-                (i < 2) ? 'x' : `x^${i}`
-            ].join('')
-        }
-    }
+    const equation = polynomialEquationToString({ coeffs, coeffDecimals })
 
     return { coeffs, predict, metrics, equation }
 }
@@ -133,7 +161,7 @@ const logarithmic = ({ x, y }) => {
 
     // Equation (string)
     let equation = {
-        withParameters: 'y = a0 + a1 * log(x)',
+        withParameters: 'y = a_0 + a_1 * log(x)',
         withCoefficients: `y = ${coeffs[0]} ${coeffs[1] < 0 ? '-' : '+'} ${Math.abs(coeffs[1])} * log(x)`
     }
 
@@ -167,7 +195,7 @@ const exponential = ({ x, y }) => {
 
     // Equation (string)
     let equation = {
-        withParameters: 'y = a0 * exp(a1 * x)',
+        withParameters: 'y = a_0 * exp(a_1 * x)',
         withCoefficients: `y = ${coeffs[0]} * exp(${coeffs[1]} * x)`
     }
 
@@ -209,7 +237,6 @@ const power = ({ x, y }) => {
 
     return { coeffs, predict, metrics, equation }
 }
-
 
 const LeastSquaresRegressionFactory = {
     linear: ({ x, y }) => polynomial({ x, y, order: 1 }),
@@ -258,5 +285,14 @@ module.exports = {
     logarithmic,
     exponential,
     power,
-    leastSquaresRegression
+    leastSquaresRegression,
+
+    polynomialEquationToString,
+
+    meanAbsoluteError,
+    meanSquaredError,
+    rootMeanSquaredError,
+    meanAbsolutePercentageError,
+    r2score,
+    r2scoreAdjusted
 }
