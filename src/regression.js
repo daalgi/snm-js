@@ -1,5 +1,5 @@
 const { Matrix, Vector } = require("./linearAlgebra")
-const { sum, round } = require("./utils")
+const { sum, roundToFixed } = require("./utils")
 
 /**
  * ORDINARY LEAST SQUARES LINEAR REGRESSION MODULE
@@ -70,8 +70,8 @@ const r2scoreAdjusted = ({ x, y, func, coeffs }) => {
     for (let i = 0; i < order + 1; i++) {
         if (i === 0) {
             equation.withParameters += 'a_0'
-            equation.withCoefficients += `${round(
-                coeffs[order - i], coeffDecimals).toFixed(coeffDecimals)}`
+            equation.withCoefficients += `${roundToFixed(
+                coeffs[order - i], coeffDecimals)}`
         } else {
             equation.withParameters += [
                 ` + a_${i} * `,
@@ -81,10 +81,8 @@ const r2scoreAdjusted = ({ x, y, func, coeffs }) => {
             ].join('')
             equation.withCoefficients += [
                 coeffs[order - i] < -1e-13 // sufficiently small negative number close to zero
-                    ? ` - ${round(
-                        -coeffs[order - i], coeffDecimals).toFixed(coeffDecimals)}`
-                    : ` + ${round(
-                        coeffs[order - i], coeffDecimals).toFixed(coeffDecimals)}`,
+                    ? ` - ${roundToFixed(-coeffs[order - i], coeffDecimals)}`
+                    : ` + ${roundToFixed(coeffs[order - i], coeffDecimals)}`,
                 (i === 1) ? ' x' : ` x^${i}`
             ].join('')
         }
@@ -140,7 +138,7 @@ const polynomial = ({ x, y, order = 2, coeffDecimals = 4 }) => {
  * @param {Array} y
  * @returns {Object} - { coeffs, predict, metrics, equation }
  */
-const logarithmic = ({ x, y }) => {
+const logarithmic = ({ x, y, coeffDecimals = 4 }) => {
     let sum_logxi = sum(x.map(x => Math.log(x)))
     let sum_logxi2 = sum(x.map(x => Math.pow(Math.log(x), 2)))
     let sum_yilogxi = sum(x.map((x, i) => y[i] * Math.log(x)))
@@ -160,9 +158,11 @@ const logarithmic = ({ x, y }) => {
     let metrics = computeMetrics({ x, y, func: predict, coeffs })
 
     // Equation (string)
+    let withCoefficients = `y = ${roundToFixed(coeffs[0], coeffDecimals)}`
+    withCoefficients += ` ${coeffs[1] < 0 ? '-' : '+'} ${roundToFixed(Math.abs(coeffs[1]), coeffDecimals)} * log(x)`
     let equation = {
         withParameters: 'y = a_0 + a_1 * log(x)',
-        withCoefficients: `y = ${coeffs[0]} ${coeffs[1] < 0 ? '-' : '+'} ${Math.abs(coeffs[1])} * log(x)`
+        withCoefficients
     }
 
     return { coeffs, predict, metrics, equation }
@@ -175,7 +175,7 @@ const logarithmic = ({ x, y }) => {
  * @param {Array} y
  * @returns {Object} - { coeffs, predict, metrics, equation }
  */
-const exponential = ({ x, y }) => {
+const exponential = ({ x, y, coeffDecimals = 4  }) => {
     let sum_xi = sum(x)
     let sum_xi2 = sum(x.map(v => v * v))
     let sum_logyi = sum(y.map(v => Math.log(v)))
@@ -194,9 +194,11 @@ const exponential = ({ x, y }) => {
     let metrics = computeMetrics({ x, y, func: predict, coeffs })
 
     // Equation (string)
+    let withCoefficients = `y = ${roundToFixed(coeffs[0], coeffDecimals)}`
+    withCoefficients += ` * exp(${roundToFixed(coeffs[1], coeffDecimals)} * x)`
     let equation = {
         withParameters: 'y = a_0 * exp(a_1 * x)',
-        withCoefficients: `y = ${coeffs[0]} * exp(${coeffs[1]} * x)`
+        withCoefficients
     }
 
     return { coeffs, predict, metrics, equation }
@@ -210,7 +212,7 @@ const exponential = ({ x, y }) => {
  * @param {Array} y
  * @returns {Object} - { coeffs, predict, metrics, equation }
  */
-const power = ({ x, y }) => {
+const power = ({ x, y, coeffDecimals = 4 }) => {
     let sum_logxi = sum(x.map(v => Math.log(v)))
     let sum_logxi2 = sum(x.map(v => Math.pow(Math.log(v), 2)))
     let sum_logyi = sum(y.map(v => Math.log(v)))
@@ -230,9 +232,11 @@ const power = ({ x, y }) => {
     let metrics = computeMetrics({ x, y, func: predict, coeffs })
 
     // Equation (string)
+    let withCoefficients = `y = ${roundToFixed(coeffs[0], coeffDecimals)}`
+    withCoefficients += ` * x^(${roundToFixed(coeffs[1], coeffDecimals)})`
     let equation = {
         withParameters: 'y = a * x^(b)',
-        withCoefficients: `y = ${coeffs[0]} * x^(${coeffs[1]})`
+        withCoefficients
     }
 
     return { coeffs, predict, metrics, equation }

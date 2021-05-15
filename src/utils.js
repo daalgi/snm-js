@@ -10,17 +10,28 @@ const EPSILON = 1e-8
 const areEqual = (one, other, epsilon = EPSILON) => Math.abs(one - other) < epsilon;
 
 /**
- * Returns a rounded
+ * Returns a rounded number
  * @param {number} num 
  * @param {integer} decimals 
  * @returns {number}
  */
-const round = (num, decimals = 2) => {
+ const round = (num, decimals = 2) => {
     if ([null, undefined].includes(decimals))
         decimals = 2
     const pow = Math.pow(10, decimals)
     return Math.round(num * pow) / pow
 }
+
+/**
+ * Returns the string of a rounded number
+ * with a fixed number of decimals
+ * i.e. roundToFixed(8, 2) = "8.00"
+ * @param {number} num 
+ * @param {integer} decimals 
+ * @returns {string}
+ */
+ const roundToFixed = (num, decimals = 2) => 
+    round(num, decimals).toFixed(decimals)
 
 /**
  * Convert radians into degrees
@@ -94,6 +105,7 @@ const factorial = n => n <= 1 ? 1 : n * factorial(n - 1)
 module.exports = {
     areEqual,
     round,
+    roundToFixed,
     toDegrees,
     toRadians,
     sum,

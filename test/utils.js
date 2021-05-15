@@ -1,5 +1,5 @@
 const {
-    areEqual, round, 
+    areEqual, round, roundToFixed,
     toDegrees, toRadians, 
     sum, 
     piecewiseLinearInterpolation
@@ -46,6 +46,34 @@ describe("utils module", () => {
         describe("round(0, 6)", () => {
             it("returns 0", () => {
                 assert.equal(round(0, 6), 0)
+            })
+        })
+    })
+
+    describe("roundToFixed(): rounds a number and converts it into a string with fixed decimals", () => {
+        describe("roundToFixed(8.13, 1)", () => {
+            it("returns 8.1", () => {
+                assert.equal(roundToFixed(8.13, 1), "8.1")
+            })
+        })
+        describe("roundToFixed(8.13, 0)", () => {
+            it("returns 8", () => {
+                assert.equal(roundToFixed(8.13, 0), "8")
+            })
+        })
+        describe("roundToFixed(8.1393)", () => {
+            it("returns 8.14", () => {
+                assert.equal(roundToFixed(8.1393), "8.14")
+            })
+        })
+        describe("roundToFixed(8.1393, 6)", () => {
+            it("returns 8.1393", () => {
+                assert.equal(roundToFixed(8.1393, 6), "8.139300")
+            })
+        })
+        describe("roundToFixed(0, 6)", () => {
+            it("returns 0", () => {
+                assert.equal(roundToFixed(0, 6), "0.000000")
             })
         })
     })

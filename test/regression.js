@@ -2,7 +2,7 @@ const {
     polynomialEquationToString,
     polynomial, logarithmic, exponential, power, leastSquaresRegression
 } = require("../src/regression")
-const { round } = require("../src/utils")
+const { roundToFixed } = require("../src/utils")
 const assert = require("chai").assert
 
 const checkCoeffs = ({ calcCoeffs, realCoeffs, tolerance = 1e-15 }) => {
@@ -90,8 +90,8 @@ describe("regression module", () => {
             })
             it("returns the equation as a string", () => {
                 let eqp = "y = a_0 + a_1 * x"
-                let eqc = `y = ${round(model.coeffs[1], 4).toFixed(4)}`
-                eqc += ` + ${round(model.coeffs[0], 4).toFixed(4)} x`
+                let eqc = `y = ${roundToFixed(model.coeffs[1], 4)}`
+                eqc += ` + ${roundToFixed(model.coeffs[0], 4)} x`
                 assert.equal(model.equation.withParameters, eqp)
                 assert.equal(model.equation.withCoefficients, eqc)
             })
@@ -109,9 +109,9 @@ describe("regression module", () => {
             })
             it("returns the equation as a string", () => {
                 let eqp = "y = a_0 + a_1 * x + a_2 * x^2"
-                let eqc = `y = ${round(model.coeffs[2], 4).toFixed(4)}`
-                eqc += ` + ${round(model.coeffs[1], 4).toFixed(4)} x`
-                eqc += ` + ${round(model.coeffs[0], 4).toFixed(4)} x^2`
+                let eqc = `y = ${roundToFixed(model.coeffs[2], 4)}`
+                eqc += ` + ${roundToFixed(model.coeffs[1], 4)} x`
+                eqc += ` + ${roundToFixed(model.coeffs[0], 4)} x^2`
                 assert.equal(model.equation.withParameters, eqp)
                 assert.equal(model.equation.withCoefficients, eqc)
             })
@@ -129,9 +129,9 @@ describe("regression module", () => {
             })
             it("returns the equation as a string", () => {
                 let eqp = "y = a_0 + a_1 * x + a_2 * x^2"
-                let eqc = `y = ${round(model.coeffs[2], 4).toFixed(4)}`
-                eqc += ` - ${round(Math.abs(model.coeffs[1]), 4).toFixed(4)} x`
-                eqc += ` + ${round(model.coeffs[0], 4).toFixed(4)} x^2`
+                let eqc = `y = ${roundToFixed(model.coeffs[2], 4)}`
+                eqc += ` - ${roundToFixed(Math.abs(model.coeffs[1]), 4)} x`
+                eqc += ` + ${roundToFixed(model.coeffs[0], 4)} x^2`
                 assert.equal(model.equation.withParameters, eqp)
                 assert.equal(model.equation.withCoefficients, eqc)
             })
@@ -149,9 +149,9 @@ describe("regression module", () => {
             })
             it("returns the equation as a string", () => {
                 let eqp = "y = a_0 + a_1 * x + a_2 * x^2"
-                let eqc = `y = ${round(model.coeffs[2], 4).toFixed(4)}`
-                eqc += ` - ${round(Math.abs(model.coeffs[1]), 4).toFixed(4)} x`
-                eqc += ` + ${round(model.coeffs[0], 4).toFixed(4)} x^2`
+                let eqc = `y = ${roundToFixed(model.coeffs[2], 4)}`
+                eqc += ` - ${roundToFixed(Math.abs(model.coeffs[1]), 4)} x`
+                eqc += ` + ${roundToFixed(model.coeffs[0], 4)} x^2`
                 assert.equal(eqp, model.equation.withParameters)
                 assert.equal(eqc, model.equation.withCoefficients)
             })
@@ -169,10 +169,10 @@ describe("regression module", () => {
             })
             it("returns the equation as a string", () => {
                 let eqp = "y = a_0 + a_1 * x + a_2 * x^2 + a_3 * x^3"
-                let eqc = `y = ${round(model.coeffs[3], 4).toFixed(4)}`
-                eqc += ` + ${round(model.coeffs[2], 4).toFixed(4)} x`
-                eqc += ` - ${round(Math.abs(model.coeffs[1]), 4).toFixed(4)} x^2`
-                eqc += ` + ${round(model.coeffs[0], 4).toFixed(4)} x^3`
+                let eqc = `y = ${roundToFixed(model.coeffs[3], 4)}`
+                eqc += ` + ${roundToFixed(model.coeffs[2], 4)} x`
+                eqc += ` - ${roundToFixed(Math.abs(model.coeffs[1]), 4)} x^2`
+                eqc += ` + ${roundToFixed(model.coeffs[0], 4)} x^3`
                 assert.equal(eqp, model.equation.withParameters)
                 assert.equal(eqc, model.equation.withCoefficients)
             })
@@ -190,11 +190,11 @@ describe("regression module", () => {
             })
             it("returns the equation as a string", () => {
                 let eqp = "y = a_0 + a_1 * x + a_2 * x^2 + a_3 * x^3 + a_4 * x^4"
-                let eqc = `y = ${round(model.coeffs[4], 4).toFixed(4)}`
-                eqc += ` + ${round(model.coeffs[3], 4).toFixed(4)} x`
-                eqc += ` - ${round(Math.abs(model.coeffs[2]), 4).toFixed(4)} x^2`
-                eqc += ` + ${round(model.coeffs[1], 4).toFixed(4)} x^3`
-                eqc += ` - ${round(Math.abs(model.coeffs[0]), 4).toFixed(4)} x^4`
+                let eqc = `y = ${roundToFixed(model.coeffs[4], 4)}`
+                eqc += ` + ${roundToFixed(model.coeffs[3], 4)} x`
+                eqc += ` - ${roundToFixed(Math.abs(model.coeffs[2]), 4)} x^2`
+                eqc += ` + ${roundToFixed(model.coeffs[1], 4)} x^3`
+                eqc += ` - ${roundToFixed(Math.abs(model.coeffs[0]), 4)} x^4`
                 assert.equal(eqp, model.equation.withParameters)
                 assert.equal(eqc, model.equation.withCoefficients)
             })
@@ -238,7 +238,8 @@ describe("regression module", () => {
             })
             it("returns the equation as a string", () => {
                 let eqp = "y = a_0 + a_1 * log(x)"
-                let eqc = `y = ${model.coeffs[0]} + ${model.coeffs[1]} * log(x)`
+                let eqc = `y = ${roundToFixed(model.coeffs[0], 4)}`
+                eqc += ` + ${roundToFixed(model.coeffs[1], 4)} * log(x)`
                 assert.equal(eqp, model.equation.withParameters)
                 assert.equal(eqc, model.equation.withCoefficients)
             })
@@ -260,7 +261,8 @@ describe("regression module", () => {
             })
             it("returns the equation as a string", () => {
                 let eqp = "y = a_0 * exp(a_1 * x)"
-                let eqc = `y = ${model.coeffs[0]} * exp(${model.coeffs[1]} * x)`
+                let eqc = `y = ${roundToFixed(model.coeffs[0], 4)}`
+                eqc += ` * exp(${roundToFixed(model.coeffs[1], 4)} * x)`
                 assert.equal(eqp, model.equation.withParameters)
                 assert.equal(eqc, model.equation.withCoefficients)
             })
@@ -278,7 +280,8 @@ describe("regression module", () => {
             })
             it("returns the equation as a string", () => {
                 let eqp = "y = a_0 * exp(a_1 * x)"
-                let eqc = `y = ${model.coeffs[0]} * exp(${model.coeffs[1]} * x)`
+                let eqc = `y = ${roundToFixed(model.coeffs[0], 4)}`
+                eqc += ` * exp(${roundToFixed(model.coeffs[1], 4)} * x)`
                 assert.equal(eqp, model.equation.withParameters)
                 assert.equal(eqc, model.equation.withCoefficients)
             })
@@ -299,7 +302,8 @@ describe("regression module", () => {
             })
             it("returns the equation as a string", () => {
                 let eqp = "y = a * x^(b)"
-                let eqc = `y = ${model.coeffs[0]} * x^(${model.coeffs[1]})`
+                let eqc = `y = ${roundToFixed(model.coeffs[0], 4)}`
+                eqc += ` * x^(${roundToFixed(model.coeffs[1], 4)})`
                 assert.equal(eqp, model.equation.withParameters)
                 assert.equal(eqc, model.equation.withCoefficients)
             })
@@ -320,9 +324,9 @@ describe("regression module", () => {
             })
             it("returns the equation as a string", () => {
                 let eqp = "y = a_0 + a_1 * x + a_2 * x^2"
-                let eqc = `y = ${round(model.coeffs[2], 4).toFixed(4)}`
-                eqc += ` + ${round(Math.abs(model.coeffs[1]), 4).toFixed(4)} x`
-                eqc += ` + ${round(model.coeffs[0], 4).toFixed(4)} x^2`
+                let eqc = `y = ${roundToFixed(model.coeffs[2], 4)}`
+                eqc += ` + ${roundToFixed(Math.abs(model.coeffs[1]), 4)} x`
+                eqc += ` + ${roundToFixed(model.coeffs[0], 4)} x^2`
                 assert.equal(eqp, model.equation.withParameters)
                 assert.equal(eqc, model.equation.withCoefficients)
             })
