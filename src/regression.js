@@ -63,7 +63,7 @@ const r2scoreAdjusted = ({ x, y, func, coeffs }) => {
  * @param {integer} coeffDecimals - to be shown in the strings
  * @returns object { withParameters, withCoefficients }
  */
- const polynomialEquationToString = ({ coeffs, coeffDecimals = 4 }) => {
+const polynomialEquationToString = ({ coeffs, coeffDecimals = 4 }) => {
     // Equation (string)
     let order = coeffs.length - 1
     let equation = { withParameters: 'y = ', withCoefficients: 'y = ' }
@@ -100,7 +100,11 @@ const r2scoreAdjusted = ({ x, y, func, coeffs }) => {
  * @param {Integer} coeffDecimals - number of the decimals in the coefficients of the string representation of the equation
  * @returns {Object} - { coeffs, predict, metrics, equation }
  */
-const polynomial = ({ x, y, order = 2, coeffDecimals = 4 }) => {
+const polynomial = ({
+    x, y, order = 2,
+    coeffDecimals = 4,
+    customMetrics = null
+}) => {
     if (!Array.isArray(x) || !Array.isArray(y))
         throw new Error("x and y should be arrays")
     if (x.length !== y.length)
@@ -122,7 +126,9 @@ const polynomial = ({ x, y, order = 2, coeffDecimals = 4 }) => {
         return sum(coeffs.map((coeff, i) => coeff * Math.pow(x, coeffs.length - i - 1)))
     }
 
-    let metrics = computeMetrics({ x, y, func: predict, coeffs })
+    let metrics = customMetrics === null
+        ? computeMetrics({ x, y, func: predict, coeffs })
+        : customMetrics({ x, y, func: predict, coeffs })
 
     // Equation (string)
     const equation = polynomialEquationToString({ coeffs, coeffDecimals })
@@ -138,7 +144,11 @@ const polynomial = ({ x, y, order = 2, coeffDecimals = 4 }) => {
  * @param {Array} y
  * @returns {Object} - { coeffs, predict, metrics, equation }
  */
-const logarithmic = ({ x, y, coeffDecimals = 4 }) => {
+const logarithmic = ({
+    x, y,
+    coeffDecimals = 4,
+    customMetrics = null
+}) => {
     let sum_logxi = sum(x.map(x => Math.log(x)))
     let sum_logxi2 = sum(x.map(x => Math.pow(Math.log(x), 2)))
     let sum_yilogxi = sum(x.map((x, i) => y[i] * Math.log(x)))
@@ -155,7 +165,9 @@ const logarithmic = ({ x, y, coeffDecimals = 4 }) => {
         return coeffs[0] + coeffs[1] * Math.log(x)
     }
 
-    let metrics = computeMetrics({ x, y, func: predict, coeffs })
+    let metrics = customMetrics === null
+        ? computeMetrics({ x, y, func: predict, coeffs })
+        : customMetrics({ x, y, func: predict, coeffs })
 
     // Equation (string)
     let withCoefficients = `y = ${roundToFixed(coeffs[0], coeffDecimals)}`
@@ -175,7 +187,11 @@ const logarithmic = ({ x, y, coeffDecimals = 4 }) => {
  * @param {Array} y
  * @returns {Object} - { coeffs, predict, metrics, equation }
  */
-const exponential = ({ x, y, coeffDecimals = 4  }) => {
+const exponential = ({
+    x, y,
+    coeffDecimals = 4,
+    customMetrics = null
+}) => {
     let sum_xi = sum(x)
     let sum_xi2 = sum(x.map(v => v * v))
     let sum_logyi = sum(y.map(v => Math.log(v)))
@@ -191,7 +207,9 @@ const exponential = ({ x, y, coeffDecimals = 4  }) => {
         return coeffs[0] * Math.exp(coeffs[1] * x)
     }
 
-    let metrics = computeMetrics({ x, y, func: predict, coeffs })
+    let metrics = customMetrics === null
+        ? computeMetrics({ x, y, func: predict, coeffs })
+        : customMetrics({ x, y, func: predict, coeffs })
 
     // Equation (string)
     let withCoefficients = `y = ${roundToFixed(coeffs[0], coeffDecimals)}`
@@ -212,7 +230,11 @@ const exponential = ({ x, y, coeffDecimals = 4  }) => {
  * @param {Array} y
  * @returns {Object} - { coeffs, predict, metrics, equation }
  */
-const power = ({ x, y, coeffDecimals = 4 }) => {
+const power = ({
+    x, y,
+    coeffDecimals = 4,
+    customMetrics = null
+}) => {
     let sum_logxi = sum(x.map(v => Math.log(v)))
     let sum_logxi2 = sum(x.map(v => Math.pow(Math.log(v), 2)))
     let sum_logyi = sum(y.map(v => Math.log(v)))
@@ -229,7 +251,9 @@ const power = ({ x, y, coeffDecimals = 4 }) => {
         return coeffs[0] * Math.pow(x, coeffs[1])
     }
 
-    let metrics = computeMetrics({ x, y, func: predict, coeffs })
+    let metrics = customMetrics === null
+        ? computeMetrics({ x, y, func: predict, coeffs })
+        : customMetrics({ x, y, func: predict, coeffs })
 
     // Equation (string)
     let withCoefficients = `y = ${roundToFixed(coeffs[0], coeffDecimals)}`
@@ -285,18 +309,20 @@ const leastSquaresRegression = ({ type, data, ...props }) => {
 }
 
 module.exports = {
+    totalSumSquares,
+    residualSumSquares,
+    meanAbsoluteError,
+    meanSquaredError,
+    rootMeanSquaredError,
+    meanAbsolutePercentageError,
+    r2score,
+    r2scoreAdjusted,
+
     polynomial,
     logarithmic,
     exponential,
     power,
     leastSquaresRegression,
 
-    polynomialEquationToString,
-
-    meanAbsoluteError,
-    meanSquaredError,
-    rootMeanSquaredError,
-    meanAbsolutePercentageError,
-    r2score,
-    r2scoreAdjusted
+    polynomialEquationToString
 }

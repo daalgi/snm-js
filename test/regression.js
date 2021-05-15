@@ -1,8 +1,16 @@
 const {
+    totalSumSquares,
+    residualSumSquares,
+    meanAbsoluteError,
+    meanSquaredError,
+    rootMeanSquaredError,
+    meanAbsolutePercentageError,
+    r2score,
+    r2scoreAdjusted,
     polynomialEquationToString,
     polynomial, logarithmic, exponential, power, leastSquaresRegression
 } = require("../src/regression")
-const { roundToFixed } = require("../src/utils")
+const { roundToFixed, sum } = require("../src/utils")
 const assert = require("chai").assert
 
 const checkCoeffs = ({ calcCoeffs, realCoeffs, tolerance = 1e-15 }) => {
@@ -19,6 +27,15 @@ const checkPredictions = ({ x, y, predict, tolerance = 1e-15 }) => {
 }
 
 const DECIMALS = 4
+
+let customMetrics = ({ x, y, func, coeffs }) =>
+    [{
+        label: "MAE", description: "Mean absolute error",
+        value: meanAbsoluteError({ x, y, func })
+    }, {
+        label: "R^2", description: "R^2",
+        value: r2score({ x, y, func })
+    }]
 
 describe("regression module", () => {
 
@@ -222,6 +239,19 @@ describe("regression module", () => {
             })
         })
 
+        describe("custom metrics", () => {
+            let x = [0, 1, 3, 4]
+            let y = [1, 2, 4, 5]
+            let model = polynomial({ x, y, order: 1, customMetrics })
+            it("returns custom `metrics`", () => {
+                assert.equal(model.metrics.length, 2)
+                assert.hasAllKeys(model.metrics[0], ["label", "description", "value"])
+                assert.hasAllKeys(model.metrics[1], ["label", "description", "value"])
+                assert.equal(model.metrics[0].label, "MAE")
+                assert.equal(model.metrics[1].label, "R^2")
+            })
+        })
+
     })
 
     describe("logarithmic()", () => {
@@ -243,8 +273,19 @@ describe("regression module", () => {
                 assert.equal(eqp, model.equation.withParameters)
                 assert.equal(eqc, model.equation.withCoefficients)
             })
+            describe("custom metrics", () => {
+                model = logarithmic({ x, y, customMetrics })
+                it("returns custom `metrics`", () => {
+                    assert.equal(model.metrics.length, 2)
+                    assert.hasAllKeys(model.metrics[0], ["label", "description", "value"])
+                    assert.hasAllKeys(model.metrics[1], ["label", "description", "value"])
+                    assert.equal(model.metrics[0].label, "MAE")
+                    assert.equal(model.metrics[1].label, "R^2")
+                })
+            })
 
         })
+
     })
 
     describe("exponential()", () => {
@@ -265,6 +306,16 @@ describe("regression module", () => {
                 eqc += ` * exp(${roundToFixed(model.coeffs[1], 4)} * x)`
                 assert.equal(eqp, model.equation.withParameters)
                 assert.equal(eqc, model.equation.withCoefficients)
+            })
+            describe("custom metrics", () => {
+                model = exponential({ x, y, customMetrics })
+                it("returns custom `metrics`", () => {
+                    assert.equal(model.metrics.length, 2)
+                    assert.hasAllKeys(model.metrics[0], ["label", "description", "value"])
+                    assert.hasAllKeys(model.metrics[1], ["label", "description", "value"])
+                    assert.equal(model.metrics[0].label, "MAE")
+                    assert.equal(model.metrics[1].label, "R^2")
+                })
             })
         })
         describe("for a perfect dataset", () => {
@@ -306,6 +357,16 @@ describe("regression module", () => {
                 eqc += ` * x^(${roundToFixed(model.coeffs[1], 4)})`
                 assert.equal(eqp, model.equation.withParameters)
                 assert.equal(eqc, model.equation.withCoefficients)
+            })
+            describe("custom metrics", () => {
+                model = power({ x, y, customMetrics })
+                it("returns custom `metrics`", () => {
+                    assert.equal(model.metrics.length, 2)
+                    assert.hasAllKeys(model.metrics[0], ["label", "description", "value"])
+                    assert.hasAllKeys(model.metrics[1], ["label", "description", "value"])
+                    assert.equal(model.metrics[0].label, "MAE")
+                    assert.equal(model.metrics[1].label, "R^2")
+                })
             })
         })
     })
