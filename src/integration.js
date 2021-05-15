@@ -1,6 +1,7 @@
 const {
     randomPointInBox,
-    boundingBoxAddition, boundingBoxArea,
+    boundingBoxAddition, 
+    boundingBoxArea,
     findLineXaxisIntersection
 } = require('./geometry')
 const { factorial } = require('./utils')

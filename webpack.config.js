@@ -3,11 +3,8 @@ const path = require("path");
 module.exports = {
     entry: './src/index.js',
     output: {
-        filename: 'snm-js-0.0.1.js',
-        path: path.resolve(__dirname, 'dist')
+        filename: 'index.js',
+        path: path.resolve(__dirname, 'build')
     },
-    /*optimization: {
-        minimizer: [new UglifyJsPlugin()],
-    },*/
     mode: 'development'
 };

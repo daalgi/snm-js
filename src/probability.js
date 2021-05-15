@@ -8,7 +8,6 @@ const randomInRange = (min = 0, max = 1) => {
     return Math.random() * (max - min) + min;
 }
 
-
 /**
  * Marsaglia polar method to generate random gaussian numbers
  * @param {Number} mean 
@@ -56,8 +55,8 @@ const normalDistribution = arr => {
 }
 
 module.exports = {
-    standardDeviation,
     randomInRange,
     randomFromNormalDistribution,
+    standardDeviation,
     normalDistribution
 }

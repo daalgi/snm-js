@@ -97,7 +97,21 @@ const polynomialEquationToString = ({ coeffs, coeffDecimals = 4 }) => {
  * @param {Array} x
  * @param {Array} y
  * @param {Integer} order - order or grade of the polynomial equation
- * @param {Integer} coeffDecimals - number of the decimals in the coefficients of the string representation of the equation
+ * @param {integer} coeffDecimals - number of decimals to be shown
+ * in the string representation of the regression model `equation.withCoefficients`
+ * @param {function} customMetrics - function that returns the metrics
+ * to evaluate the model. 
+ * For example, the following function return a list of objects:
+ *  customMetrics = ({ x, y, func, coeffs }) =>
+ *      [{
+ *          label: "MAE", 
+ *          description: "Mean absolute error",
+ *          value: meanAbsoluteError({ x, y, func })
+ *      }, {
+ *          label: "R^2", 
+ *          description: "R^2",
+ *          value: r2score({ x, y, func })
+ *      }]
  * @returns {Object} - { coeffs, predict, metrics, equation }
  */
 const polynomial = ({
@@ -142,6 +156,21 @@ const polynomial = ({
  * source: http://mathworld.wolfram.com/LeastSquaresFittingLogarithmic.html
  * @param {Array} x
  * @param {Array} y
+ * @param {integer} coeffDecimals - number of decimals to be shown
+ * in the string representation of the regression model `equation.withCoefficients`
+ * @param {function} customMetrics - function that returns the metrics
+ * to evaluate the model. 
+ * For example, the following function return a list of objects:
+ *  customMetrics = ({ x, y, func, coeffs }) =>
+ *      [{
+ *          label: "MAE", 
+ *          description: "Mean absolute error",
+ *          value: meanAbsoluteError({ x, y, func })
+ *      }, {
+ *          label: "R^2", 
+ *          description: "R^2",
+ *          value: r2score({ x, y, func })
+ *      }]
  * @returns {Object} - { coeffs, predict, metrics, equation }
  */
 const logarithmic = ({
@@ -185,6 +214,21 @@ const logarithmic = ({
  * source: http://mathworld.wolfram.com/LeastSquaresFittingExponential.html
  * @param {Array} x
  * @param {Array} y
+ * @param {integer} coeffDecimals - number of decimals to be shown
+ * in the string representation of the regression model `equation.withCoefficients`
+ * @param {function} customMetrics - function that returns the metrics
+ * to evaluate the model. 
+ * For example, the following function return a list of objects:
+ *  customMetrics = ({ x, y, func, coeffs }) =>
+ *      [{
+ *          label: "MAE", 
+ *          description: "Mean absolute error",
+ *          value: meanAbsoluteError({ x, y, func })
+ *      }, {
+ *          label: "R^2", 
+ *          description: "R^2",
+ *          value: r2score({ x, y, func })
+ *      }]
  * @returns {Object} - { coeffs, predict, metrics, equation }
  */
 const exponential = ({
@@ -228,6 +272,21 @@ const exponential = ({
  * TODO: check log(0) values
  * @param {Array} x
  * @param {Array} y
+ * @param {integer} coeffDecimals - number of decimals to be shown
+ * in the string representation of the regression model `equation.withCoefficients`
+ * @param {function} customMetrics - function that returns the metrics
+ * to evaluate the model. 
+ * For example, the following function return a list of objects:
+ *  customMetrics = ({ x, y, func, coeffs }) =>
+ *      [{
+ *          label: "MAE", 
+ *          description: "Mean absolute error",
+ *          value: meanAbsoluteError({ x, y, func })
+ *      }, {
+ *          label: "R^2", 
+ *          description: "R^2",
+ *          value: r2score({ x, y, func })
+ *      }]
  * @returns {Object} - { coeffs, predict, metrics, equation }
  */
 const power = ({
@@ -309,20 +368,20 @@ const leastSquaresRegression = ({ type, data, ...props }) => {
 }
 
 module.exports = {
-    totalSumSquares,
-    residualSumSquares,
+    computeMetrics,
     meanAbsoluteError,
     meanSquaredError,
     rootMeanSquaredError,
     meanAbsolutePercentageError,
+    totalSumSquares,
+    residualSumSquares,
     r2score,
     r2scoreAdjusted,
-
+    polynomialEquationToString,
     polynomial,
     logarithmic,
     exponential,
     power,
-    leastSquaresRegression,
-
-    polynomialEquationToString
+    LeastSquaresRegressionFactory,
+    leastSquaresRegression
 }
