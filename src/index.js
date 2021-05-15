@@ -127,3 +127,4 @@ export {
 
 // TUTORIAL TO BUILD A PACKAGE
 //https://medium.com/the-andela-way/build-and-publish-your-first-npm-package-a4daf0e2431
+//https://betterstack.dev/blog/npm-package-best-practices/#heading-directory-structure-conventions
